@@ -2,8 +2,10 @@ package com.netty.learn.netty.simple;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPipeline;
 import io.netty.util.CharsetUtil;
 
 import java.nio.charset.StandardCharsets;
@@ -31,6 +33,12 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         System.out.println("客户端发送消息是:" + buf.toString(StandardCharsets.UTF_8));
         System.out.println("客户端地址:" + ctx.channel().remoteAddress());
         // super.channelRead(ctx, msg);
+
+        // channel和pipeline相互包含
+        // 网络信息
+        Channel channel = ctx.channel();
+        // 双向链表 出栈入栈
+        ChannelPipeline pipeline = ctx.pipeline();
     }
 
     /**

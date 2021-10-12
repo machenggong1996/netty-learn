@@ -16,6 +16,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class NettyServer {
 
     public static void main(String[] args) throws InterruptedException {
+        // 线程数默认cpu核数乘2
         // 处理连接请求 accept
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         // 处理业务 read/write
@@ -38,8 +39,10 @@ public class NettyServer {
                         }
                     });
 
+            System.out.println("服务器 ready");
             // 绑定一个端口 并且同步，生成ChannelFuture 对象
             ChannelFuture sync = bootstrap.bind(6668).sync();
+
             // 对关闭通道进行监听
             ChannelFuture close = sync.channel().closeFuture().sync();
         } finally {
