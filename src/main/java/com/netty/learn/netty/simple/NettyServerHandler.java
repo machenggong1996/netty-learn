@@ -9,6 +9,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.util.CharsetUtil;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 1. 自定义handler
@@ -27,6 +28,45 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // taskQueue 任务队列
+        ctx.channel().eventLoop().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ctx.writeAndFlush(Unpooled.copiedBuffer("hello 客户端 1", CharsetUtil.UTF_8));
+            }
+        });
+
+        // 定时任务
+        ctx.channel().eventLoop().schedule(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(20000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ctx.writeAndFlush(Unpooled.copiedBuffer("hello 客户端 2", CharsetUtil.UTF_8));
+            }
+        }, 5, TimeUnit.SECONDS);
+
+        ctx.channel().eventLoop().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(50000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ctx.writeAndFlush(Unpooled.copiedBuffer("hello 客户端 3", CharsetUtil.UTF_8));
+            }
+        });
+
+
         System.out.println("server ctx =" + ctx);
         // netty 提供
         ByteBuf buf = (ByteBuf) msg;
